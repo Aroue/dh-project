@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dh.hotel.dao.HotelCommentMapper">
+  <resultMap id="BaseResultMap" type="org.dh.hotel.entity.entity.HotelComment">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="uer_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="comment_content" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="comment_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="HotelCommentResultMap" type="org.dh.hotel.entity.dto.HotelComment.HotelCommentA01DTO">
+    <result property="id" column="id"/>
+    <result property="userName" column="user_name"/>
+    <result property="uerId" column="uer_id"/>
+    <result property="commentContent" column="comment_content"/>
+    <result property="commentTime" column="comment_time"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, uer_id, comment_content, comment_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hotel_comment
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="getAllHotelComment" resultMap="HotelCommentResultMap">
+    select hotel_comment.*,hotel_user.user_name as user_name
+    from hotel_comment
+    inner join hotel_user on hotel_user.id = hotel_comment.uer_id
+    order by comment_time DESC
+    LIMIT #{pageSize,jdbcType=INTEGER} OFFSET #{offset,jdbcType=INTEGER}
+  </select>
+
+  <select id="countAllHotelComment" resultType="java.lang.Integer">
+    select count(*)
+    from hotel_comment
+    inner join hotel_user on hotel_user.id = hotel_comment.uer_id
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from hotel_comment
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="org.dh.hotel.entity.entity.HotelComment">
+    insert into hotel_comment (uer_id, comment_content,
+      comment_time)
+    values (#{uerId,jdbcType=INTEGER}, #{commentContent,jdbcType=VARCHAR},  CURRENT_TIMESTAMP)
+  </insert>
+  <insert id="insertSelective" parameterType="org.dh.hotel.entity.entity.HotelComment">
+    insert into hotel_comment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="uerId != null">
+        uer_id,
+      </if>
+      <if test="commentContent != null">
+        comment_content,
+      </if>
+      <if test="commentTime != null">
+        comment_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uerId != null">
+        #{uerId,jdbcType=INTEGER},
+      </if>
+      <if test="commentContent != null">
+        #{commentContent,jdbcType=VARCHAR},
+      </if>
+      <if test="commentTime != null">
+        #{commentTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.dh.hotel.entity.entity.HotelComment">
+    update hotel_comment
+    <set>
+      <if test="uerId != null">
+        uer_id = #{uerId,jdbcType=INTEGER},
+      </if>
+      <if test="commentContent != null">
+        comment_content = #{commentContent,jdbcType=VARCHAR},
+      </if>
+      <if test="commentTime != null">
+        comment_time = #{commentTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.dh.hotel.entity.entity.HotelComment">
+    update hotel_comment
+    set uer_id = #{uerId,jdbcType=INTEGER},
+      comment_content = #{commentContent,jdbcType=VARCHAR},
+      comment_time = #{commentTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

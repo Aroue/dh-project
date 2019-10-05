@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dh.hotel.dao.HotelRoomMapper">
+    <resultMap id="BaseResultMap" type="org.dh.hotel.entity.entity.HotelRoom">
+        <constructor>
+            <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="room_type_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="room_number" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="remark" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="home_state" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="HotelRoomResultMap" type="org.dh.hotel.entity.dto.HotelRoom.HotelRoomA01DTO">
+        <result property="id" column="id"/>
+        <result property="roomTypeId" column="room_type_id"/>
+        <result property="roomTypeName" column="room_type_name"/>
+        <result property="roomNumber" column="room_number"/>
+        <result property="remark" column="remark"/>
+        <result property="homeState" column="home_state"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, room_type_id, room_number, remark, home_state
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from hotel_room
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="getAllHotelRoom" resultMap="HotelRoomResultMap">
+        select hotel_room.*,hotel_room_type.name as room_type_name
+        from hotel_room
+        inner join hotel_room_type on hotel_room_type.id = hotel_room.room_type_id
+        <where>
+            <if test="roomTypeId != null and roomTypeId != ''">
+                hotel_room.room_type_id = #{roomTypeId}
+            </if>
+            <if test="homeState != null and homeState != ''">
+               and hotel_room.home_state = #{homeState}
+            </if>
+        </where>
+        LIMIT #{pageSize,jdbcType=INTEGER} OFFSET #{offset,jdbcType=INTEGER}
+    </select>
+
+    <select id="countAllHotelRoom" resultType="java.lang.Integer">
+        select count(*)
+        from hotel_room
+        inner join hotel_room_type on hotel_room_type.id = hotel_room.room_type_id
+        <where>
+            <if test="roomTypeId != null and roomTypeId != ''">
+                hotel_room.room_type_id = #{roomTypeId}
+            </if>
+            <if test="homeState != null and homeState != ''">
+                and hotel_room.home_state = #{homeState}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from hotel_room
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="org.dh.hotel.entity.entity.HotelRoom">
+    insert into hotel_room (room_type_id, room_number,
+      remark, home_state)
+    values (#{roomTypeId,jdbcType=INTEGER}, #{roomNumber,jdbcType=VARCHAR},
+      #{remark,jdbcType=VARCHAR}, #{homeState,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="org.dh.hotel.entity.entity.HotelRoom">
+        insert into hotel_room
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            <if test="roomTypeId != null">
+                room_type_id,
+            </if>
+            <if test="roomNumber != null">
+                room_number,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+            <if test="homeState != null">
+                home_state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roomTypeId != null">
+                #{roomTypeId,jdbcType=INTEGER},
+            </if>
+            <if test="roomNumber != null">
+                #{roomNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="homeState != null">
+                #{homeState,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="org.dh.hotel.entity.entity.HotelRoom">
+        update hotel_room
+        <set>
+            <if test="roomTypeId != null and roomTypeId != ''">
+                room_type_id = #{roomTypeId,jdbcType=INTEGER},
+            </if>
+            <if test="roomNumber != null">
+                room_number = #{roomNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="homeState != null">
+                home_state = #{homeState,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="org.dh.hotel.entity.entity.HotelRoom">
+    update hotel_room
+    set room_type_id = #{roomTypeId,jdbcType=INTEGER},
+      room_number = #{roomNumber,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      home_state = #{homeState,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
